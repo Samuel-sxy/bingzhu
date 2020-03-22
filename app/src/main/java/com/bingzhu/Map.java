@@ -111,7 +111,7 @@ public class Map extends AppCompatActivity {
 
 
         //一连串的请求权限
-        List<String> permissionlist = new ArrayList<String>();
+        List<String> permissionlist = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(Map.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionlist.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
@@ -125,8 +125,7 @@ public class Map extends AppCompatActivity {
             permissionlist.add(Manifest.permission.SEND_SMS);
         }
         if(!permissionlist.isEmpty()){
-            String[] permissions = permissionlist.toArray(new String[permissionlist.size()]);
-            Toast.makeText(Map.this,"没有足够权限无法运行" , Toast.LENGTH_SHORT).show();
+            String[] permissions = permissionlist.toArray(new String[0]);
             ActivityCompat.requestPermissions(Map.this , permissions , 1);
         }
         else{
@@ -150,9 +149,12 @@ public class Map extends AppCompatActivity {
         super.onDestroy();
         locationClient.stop();
         baidumap.setMyLocationEnabled(false);
-        mapview.onDestroy();
-        shareurlsearch.destroy();
-        mapview = null;
+        if (mapview != null){
+            mapview.onDestroy();
+        }
+        if(shareurlsearch != null) {
+            shareurlsearch.destroy();
+        }
     }
 
 
@@ -244,8 +246,7 @@ public class Map extends AppCompatActivity {
     //&危险权限的运行时申请
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 1 :
+       if(requestCode == 1) {
                 if(grantResults.length > 0 ){
                     for(int result : grantResults){
                         if(result != PackageManager.PERMISSION_GRANTED){
@@ -260,8 +261,6 @@ public class Map extends AppCompatActivity {
                     Toast.makeText(this ,"联系开发者13530369792", Toast.LENGTH_LONG).show();
                     finish();
                 }
-                break;
-            default://不会发生写着好玩
         }
     }
 
