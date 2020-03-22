@@ -97,10 +97,13 @@ public class Map extends AppCompatActivity {
             public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
             }
         };
+         shareurlsearch = ShareUrlSearch.newInstance();
+         shareurlsearch.setOnGetShareUrlResultListener(listener);
+
          sendcontactbutton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 if(!TextUtils.isEmpty(shareUrl)){
+                 if(shareUrl != ""){
                      sendmsg();
                  }
                  else{
@@ -225,12 +228,9 @@ public class Map extends AppCompatActivity {
                 navigateTo(location);
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-                shareurlsearch = ShareUrlSearch.newInstance();
-                shareurlsearch.setOnGetShareUrlResultListener(listener);
                 shareurlsearch.requestLocationShareUrl(new LocationShareURLOption()
                         .location(new LatLng(latitude, longitude)).name("位置分享") //分享点名称
                         .snippet("分享人所在地点"));
-                //Toast.makeText(Map.this , "shareurl生成且为"+shareUrl , Toast.LENGTH_SHORT).show();
             }
         }
     }
