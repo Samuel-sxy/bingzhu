@@ -9,12 +9,13 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     Button mapbutton;
+    //oncreat方法
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //进入地图模块的按钮活动-----------------------------
+        //进入地图模块按钮
         mapbutton = findViewById(R.id.map_button);
         mapbutton.setOnClickListener(new View.OnClickListener() {
             @Override
