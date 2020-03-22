@@ -87,7 +87,7 @@ public class Map extends AppCompatActivity {
          listener = new OnGetShareUrlResultListener() {
             @Override
             public void onGetLocationShareUrlResult(ShareUrlResult shareUrlResult) {
-                shareUrl = shareUrlResult.getUrl();
+                shareUrl  = shareUrlResult.getUrl();
             }
             //没吊用的两个方法
             @Override
@@ -103,7 +103,7 @@ public class Map extends AppCompatActivity {
          sendcontactbutton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 if(shareUrl != ""){
+                 if(!shareUrl.equals("")){
                      sendmsg();
                  }
                  else{
@@ -197,7 +197,7 @@ public class Map extends AppCompatActivity {
     //设置location信息方法方法
     private void initLocation(){
         LocationClientOption option = new LocationClientOption();
-        option.setScanSpan(1500);
+        option.setScanSpan(5000);
         option.setOpenGps(true); // 打开gps
         option.setCoorType("bd09ll"); // 设置坐标类型
         locationClient.setLocOption(option);
@@ -231,6 +231,7 @@ public class Map extends AppCompatActivity {
                 shareurlsearch.requestLocationShareUrl(new LocationShareURLOption()
                         .location(new LatLng(latitude, longitude)).name("位置分享") //分享点名称
                         .snippet("分享人所在地点"));
+                Toast.makeText(Map.this , shareUrl +" " +  latitude + longitude , Toast.LENGTH_LONG ).show();
             }
         }
     }
@@ -256,10 +257,6 @@ public class Map extends AppCompatActivity {
                             return;
                     }
                     requestLocation();
-                }
-                else {
-                    Toast.makeText(this ,"联系开发者13530369792", Toast.LENGTH_LONG).show();
-                    finish();
                 }
         }
     }
