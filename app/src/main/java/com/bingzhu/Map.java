@@ -97,17 +97,17 @@ public class Map extends AppCompatActivity {
             public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
             }
         };
-        sendcontactbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(shareUrl != null){
-                    sendmsg();
-                }
-                else{
-                    Toast.makeText(Map.this , "异常：地址url未获取" , Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+         sendcontactbutton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 if(!TextUtils.isEmpty(shareUrl)){
+                     sendmsg();
+                 }
+                 else{
+                     Toast.makeText(Map.this , "异常：地址url未获取" , Toast.LENGTH_SHORT).show();
+                 }
+             }
+         });
 
 
         //一连串的请求权限
@@ -165,18 +165,16 @@ public class Map extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("contactlist" , MODE_PRIVATE);
         String receiver1 = pref.getString("1" , "" );
         String receiver2 = pref.getString("2" , "" );
-        Toast.makeText(Map.this, receiver1 == null ? "为null" : "为空字符", Toast.LENGTH_SHORT).show();
-        if(receiver1 != ""){
+        if(!TextUtils.isEmpty(receiver1)){
             smsmanager.sendTextMessage(receiver1 , null , "我的位置在此\n"+shareUrl , null , null);
             Toast.makeText(Map.this , "发送联系人1成功" , Toast.LENGTH_SHORT).show();
         }
-        if(receiver2 != ""){
+        if(!TextUtils.isEmpty(receiver2)){
             smsmanager.sendTextMessage(receiver2 , null ,"我的位置在此\n"+ shareUrl , null , null);
             Toast.makeText(Map.this , "发送联系人2成功" , Toast.LENGTH_SHORT).show();
         }
-        if(receiver1 == "" && receiver2 == ""){
+        if(TextUtils.isEmpty(receiver1) && TextUtils.isEmpty(receiver2)){
             Toast.makeText(Map.this , "未设置联系人" , Toast.LENGTH_SHORT).show();
-            //receiver1.equals("") & receiver2.equals("")
         }
     }
 
@@ -312,6 +310,7 @@ public class Map extends AppCompatActivity {
                             default:
                                 break;
                         }
+                        Toast.makeText(Map.this, "修改成功", Toast.LENGTH_SHORT).show();
                         dialog2.dismiss();
                     }
                 });
