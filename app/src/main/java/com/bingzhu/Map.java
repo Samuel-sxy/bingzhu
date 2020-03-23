@@ -56,10 +56,12 @@ public class Map extends AppCompatActivity {
     private BaiduMap baidumap;
     private boolean isFirstLocate = true;
     private ShareUrlSearch shareurlsearch;
-    String shareUrl ;
+    //String shareUrl ;
     double latitude;
     double longitude;
     OnGetShareUrlResultListener listener ;
+    boolean flag = true ;
+    LocationShareURLOption locationShareURLOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,31 +86,31 @@ public class Map extends AppCompatActivity {
         sendcontactbutton = findViewById(R.id.send_button);
 
         //建立一个onGetShareUrllistener对象用于监听共享位置
-         listener = new OnGetShareUrlResultListener() {
-            @Override
-            public void onGetLocationShareUrlResult(ShareUrlResult shareUrlResult) {
-                shareUrl  = shareUrlResult.getUrl();
-            }
-            //没吊用的两个方法
-            @Override
-            public void onGetPoiDetailShareUrlResult(ShareUrlResult shareUrlResult) {
-            }
-            @Override
-            public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
-            }
-        };
-         shareurlsearch = ShareUrlSearch.newInstance();
-         shareurlsearch.setOnGetShareUrlResultListener(listener);
-
          sendcontactbutton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 if(!shareUrl.equals("")){
-                     sendmsg();
-                 }
-                 else{
-                     Toast.makeText(Map.this , "异常：地址url未获取" , Toast.LENGTH_SHORT).show();
-                 }
+                 listener = new OnGetShareUrlResultListener() {
+                     @Override
+                     public void onGetLocationShareUrlResult(ShareUrlResult shareUrlResult) {
+                         String shareUrl  = shareUrlResult.getUrl();
+                         if(!(shareUrl == null)) {
+                             sendmsg(shareUrl);
+                         }
+                         else
+                             Toast.makeText(Map.this ,"尚未完成定位，请稍后重试" , Toast.LENGTH_SHORT).show();
+                     }
+                     //没吊用的两个方法
+                     @Override
+                     public void onGetPoiDetailShareUrlResult(ShareUrlResult shareUrlResult) {
+                     }
+                     @Override
+                     public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
+                     }
+                 };
+                 shareurlsearch = ShareUrlSearch.newInstance();
+                 shareurlsearch.setOnGetShareUrlResultListener(listener);
+                 shareurlsearch.requestLocationShareUrl(locationShareURLOption);
+
              }
          });
 
@@ -165,7 +167,7 @@ public class Map extends AppCompatActivity {
 
     //$位置分享方法类、群
     //方法：发送短信
-    private void sendmsg(){
+    private void sendmsg(String shareUrl){
         SmsManager smsmanager = SmsManager.getDefault();
         SharedPreferences pref = getSharedPreferences("contactlist" , MODE_PRIVATE);
         String receiver1 = pref.getString("1" , "" );
@@ -224,14 +226,12 @@ public class Map extends AppCompatActivity {
         @Override
         public void onReceiveLocation(final BDLocation location) {
             //处理定位信息逻辑
-            if(location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation  ){
+            if(location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation  ) {
                 navigateTo(location);
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                shareurlsearch.requestLocationShareUrl(new LocationShareURLOption()
-                        .location(new LatLng(latitude, longitude)).name("位置分享") //分享点名称
-                        .snippet("分享人所在地点"));
-                Toast.makeText(Map.this , shareUrl +" " +  latitude + longitude , Toast.LENGTH_LONG ).show();
+                new LatLng(location.getLatitude() , location.getLongitude());
+                locationShareURLOption = new LocationShareURLOption()
+                        .location(new LatLng(location.getLatitude() , location.getLongitude())).name("位置分享") //分享点名称
+                        .snippet("分享人所在地点");
             }
         }
     }
