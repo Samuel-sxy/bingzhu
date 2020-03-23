@@ -84,29 +84,29 @@ public class Map extends AppCompatActivity {
         });
         //按钮发送位置信息
         sendcontactbutton = findViewById(R.id.send_button);
-
         //建立一个onGetShareUrllistener对象用于监听共享位置
+        listener = new OnGetShareUrlResultListener() {
+            @Override
+            public void onGetLocationShareUrlResult(ShareUrlResult shareUrlResult) {
+                String shareUrl  = shareUrlResult.getUrl();
+                if(!(shareUrl == null)) {
+                    sendmsg(shareUrl);
+                }
+                else
+                    Toast.makeText(Map.this ,"尚未完成定位，请稍后重试" , Toast.LENGTH_SHORT).show();
+            }
+            //没吊用的两个方法
+            @Override
+            public void onGetPoiDetailShareUrlResult(ShareUrlResult shareUrlResult) {
+            }
+            @Override
+            public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
+            }
+        };
+        //发信息按钮
          sendcontactbutton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 listener = new OnGetShareUrlResultListener() {
-                     @Override
-                     public void onGetLocationShareUrlResult(ShareUrlResult shareUrlResult) {
-                         String shareUrl  = shareUrlResult.getUrl();
-                         if(!(shareUrl == null)) {
-                             sendmsg(shareUrl);
-                         }
-                         else
-                             Toast.makeText(Map.this ,"尚未完成定位，请稍后重试" , Toast.LENGTH_SHORT).show();
-                     }
-                     //没吊用的两个方法
-                     @Override
-                     public void onGetPoiDetailShareUrlResult(ShareUrlResult shareUrlResult) {
-                     }
-                     @Override
-                     public void onGetRouteShareUrlResult(ShareUrlResult shareUrlResult) {
-                     }
-                 };
                  shareurlsearch = ShareUrlSearch.newInstance();
                  shareurlsearch.setOnGetShareUrlResultListener(listener);
                  shareurlsearch.requestLocationShareUrl(locationShareURLOption);
@@ -199,7 +199,7 @@ public class Map extends AppCompatActivity {
     //设置location信息方法方法
     private void initLocation(){
         LocationClientOption option = new LocationClientOption();
-        option.setScanSpan(5000);
+        option.setScanSpan(1000);
         option.setOpenGps(true); // 打开gps
         option.setCoorType("bd09ll"); // 设置坐标类型
         locationClient.setLocOption(option);
@@ -253,8 +253,9 @@ public class Map extends AppCompatActivity {
                         if(result != PackageManager.PERMISSION_GRANTED){
                             Toast.makeText(this , "需要同意所有权限才能运行程序" , Toast.LENGTH_LONG).show();
                         }
-                            finish();
-                            return;
+                        Toast.makeText(this , "权限已同意，重新进入可运行" , Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
                     }
                     requestLocation();
                 }
